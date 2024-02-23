@@ -1,0 +1,41 @@
+@import "../../../styles/variables.scss";
+
+.footer {
+    display: flex;
+    align-items: center;
+    padding: 20px 0 0;
+    box-sizing: border-box;
+}
+
+.link {
+    margin-right: 20px;
+    text-decoration: none;
+    color: $text-secondary;
+    font-size: 12px;
+    transition: all 0.3s;
+
+    &:hover {
+        color: $text-primary;
+    }
+
+    &:active {
+        color: $text-secondary;
+    }
+}
+
+@media screen and (min-width: 480px) {
+    .footer {
+        padding: 40px 0 0;
+    }
+
+    .link {
+        margin-right: 80px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .link {
+        margin-right: 20px;
+        font-size: 14px;
+    }
+}
