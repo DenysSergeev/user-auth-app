@@ -1,8 +1,8 @@
-import LIVR from "livr";
-import extraRules from "livr-extra-rules";
+import LIVR from 'livr';
+import extraRules from 'livr-extra-rules';
 
-import rules from "./rules";
-import { REQUIRED_ERRORS, TOO_SHORT_ERRORS } from "./errors";
+import rules from './rules';
+import { REQUIRED_ERRORS, TOO_SHORT_ERRORS } from './errors';
 
 LIVR.Validator.registerDefaultRules(extraRules);
 LIVR.Validator.defaultAutoTrim(true);
@@ -28,7 +28,7 @@ export function mapErrors(error) {
   const mapedErrors = {};
 
   error.errors?.forEach(
-    (element) => (mapedErrors[element.field] = element.message)
+    element => (mapedErrors[element.field] = element.message)
   );
 
   return mapedErrors;
@@ -39,7 +39,7 @@ function decodeErrorObject(errors) {
 
   for (const field in decodedErrors) {
     if (decodedErrors.hasOwnProperty(field)) {
-      const errorField = field.replace("data/", "");
+      const errorField = field.replace('data/', '');
 
       decodedErrors[errorField] = decodeErrorCode(
         decodedErrors[field],
@@ -51,20 +51,20 @@ function decodeErrorObject(errors) {
   return decodedErrors;
 }
 
-export function decodeErrorCode(code, field = "") {
+export function decodeErrorCode(code, field = '') {
   switch (code) {
-    case "REQUIRED": {
+    case 'REQUIRED': {
       const errorMessage = field && REQUIRED_ERRORS[field];
 
-      return errorMessage || "Required";
+      return errorMessage || 'Required';
     }
-    case "TOO_SHORT": {
+    case 'TOO_SHORT': {
       const errorMessage = field && TOO_SHORT_ERRORS[field];
 
-      return errorMessage || "Value is too short";
+      return errorMessage || 'Value is too short';
     }
-    case "WRONG_EMAIL":
-      return "Wrong email format";
+    case 'WRONG_EMAIL':
+      return 'Wrong email format';
 
     default:
       return code;

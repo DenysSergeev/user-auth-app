@@ -1,0 +1,23 @@
+.container {
+  margin: 0 auto;
+}
+
+.navbar {
+  background-color: #3498db;
+  padding: 2rem;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+}
+.navbarBrand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+.welcomeContainer {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}

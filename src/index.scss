@@ -1,12 +1,12 @@
-@import "./styles/variables.scss";
+@import './styles/variables.scss';
 
 body {
   margin: 0;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: $background;
-  font-family: "Montserrat";
+  font-family: 'Montserrat';
   font-weight: 600;
   color: $text-primary;
 }

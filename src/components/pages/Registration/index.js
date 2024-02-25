@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
 
 import Input from '../../base/Input';
@@ -14,21 +13,24 @@ import { ROUTES } from '../../../utils/constants/routes';
 
 import styles from './index.module.scss';
 
-const LoginPage = () => {
+const RegistrationPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const [inputs, setInputs] = useState({
+    name: '',
     email: '',
     password: '',
+    password_confirmation: '',
   });
 
   const [errors, setErrors] = useState({
+    name: '',
     email: '',
     password: '',
   });
 
   const [isSucceed, setIsSucceed] = useState({
+    name: false,
     email: false,
     password: false,
   });
@@ -48,54 +50,54 @@ const LoginPage = () => {
     setErrors(prev => ({ ...prev, [valueKey]: '' }));
   };
 
-  const handleLogin = async e => {
+  const handleRegistration = async e => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/api/login', {
-        email: inputs.email,
-        password: inputs.password,
-      });
-
-      const userData = response.data.user;
-      console.log('userData', userData);
-      login(userData);
-
+      console.log('Before validation');
       await validateLogin({
         data: inputs,
         onSuccess: () => {
           setErrors({});
-          setIsSucceed({ email: true, password: true });
-
-          alert(`Hi ${userData.name}, you're logged in.`);
+          setIsSucceed({ name: true, email: true, password: true });
+          alert('You are registered!');
         },
         onError: validationErrors => {
-          setErrors({ ...validationErrors });
-          setIsSucceed({ email: false, password: false });
-
-          alert('Email or password do not match');
+          const formattedErrors = Object.fromEntries(
+            Object.entries(validationErrors).map(([key, value]) => [
+              key,
+              Array.isArray(value) ? value.join(', ') : value,
+            ])
+          );
+          setErrors({ ...formattedErrors });
+          setIsSucceed({ name: true, email: false, password: false });
         },
+      });
+
+      const response = await axios.post('/api/register', {
+        name: inputs.name,
+        email: inputs.email,
+        password: inputs.password,
+        password_confirmation: inputs.password_confirmation,
       });
 
       setIsSucceed(true);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userName', inputs.name);
+
       navigate('/dashboard');
     } catch (error) {
       setIsSucceed(false);
       if (error.response?.data?.errors !== undefined) {
-        setErrors(error.response.data.errors);
-      }
-      if (error.response?.data?.error !== undefined) {
-        setErrors(error.response.data.error);
-      }
-      if (error.response?.status === 401) {
-        alert('User not found or incorrect password');
+        const formattedErrors = Object.fromEntries(
+          Object.entries(error.response.data.errors).map(([key, value]) => [
+            key,
+            value.join(', '),
+          ])
+        );
+        setErrors(formattedErrors);
       }
     }
-  };
-
-  const handleForgotPasswordClick = () => {
-    alert('Forgot password action is called!');
   };
 
   return (
@@ -106,27 +108,34 @@ const LoginPage = () => {
             <img src={logo} alt='logo' />
           </div>
 
-          <p className={styles.title}>Sign in</p>
+          <p className={styles.title}>Registration</p>
 
           <p className={styles.heading}>
-            Don’t have an account?
-            <Link
-              to={`${ROUTES.ROOT}${'register'}`}
-              className={styles.headingLink}
-            >
+            Have already an account?
+            <Link to={ROUTES.ROOT} className={styles.headingLink}>
               {' '}
-              Sign up now
+              Login here
             </Link>
           </p>
 
-          <form className={styles.form} onSubmit={handleLogin}>
+          <form className={styles.form} onSubmit={handleRegistration}>
+            <Input
+              value={inputs.name}
+              valueKey='name'
+              label='Name'
+              name='name'
+              errorMessage={errors.name}
+              isSucceed={isSucceed.name}
+              onChange={handleInputChange}
+            />
+
             <Input
               value={inputs.email}
               valueKey='email'
               label='Email'
               name='email'
-              errorMessage={errors.name}
-              isSucceed={isSucceed.name}
+              errorMessage={errors.email}
+              isSucceed={isSucceed.email}
               onChange={handleInputChange}
             />
 
@@ -136,16 +145,27 @@ const LoginPage = () => {
               label='Password'
               type='password'
               name='password'
-              action={{
-                text: 'Forgot your password?',
-                onClick: handleForgotPasswordClick,
-              }}
               errorMessage={errors.password}
               isSucceed={isSucceed.password}
               onChange={handleInputChange}
             />
 
-            <Button label='Sign in' type='submit' isDisabled={!isFormValid} />
+            <Input
+              value={inputs.password_confirmation}
+              valueKey='password_confirmation'
+              label='Confirm Password'
+              type='password'
+              name='password_confirmation'
+              errorMessage={errors.password_confirmation}
+              isSucceed={isSucceed.password_confirmation}
+              onChange={handleInputChange}
+            />
+
+            <Button
+              label='Register now'
+              type='submit'
+              isDisabled={!isFormValid}
+            />
           </form>
         </div>
 
@@ -155,4 +175,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegistrationPage;
